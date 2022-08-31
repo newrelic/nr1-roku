@@ -1,0 +1,7 @@
+{
+  "schemaType": "LAUNCHER",
+  "id": "launcher",
+  "displayName": "Group Bar Demo",
+  "description": "Demo nerdlet for the Group Bar widget",
+  "rootNerdletId": "home"
+}
