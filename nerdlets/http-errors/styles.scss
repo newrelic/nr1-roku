@@ -1,0 +1,33 @@
+@import '../../library/components/NRLabsMultiSelect/styles.scss';
+@import '../../library/components/NRLabsFilterBar/styles.scss';
+
+.container {
+  margin: 1em;
+  
+
+  .control-bar {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-column-gap: 1em;
+  }
+
+  .charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1em;
+    padding: 1em 0;
+
+    .summary {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr max-content max-content max-content max-content;
+      grid-column-gap: 24px;
+      align-items: center;
+      padding: 1em;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+  }
+}

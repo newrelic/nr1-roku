@@ -17,21 +17,12 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
   const [filterItems, setFilterItems] = useState([]);
   const [currentGroup, setCurrentGroup] = useState('');
   const [searchTexts, setSearchTexts] = useState([]);
-  const [displayOptions, setDisplayOptions] = useState(options.map((o, i) => !i));
-  const [optionShouldMatch, setOptionShouldMatch] = useState(options.map(o => true));
-  const [optionFilterMatch, setOptionFilterMatch] = useState(options.map(o => true));
+  const [displayOptions, setDisplayOptions] = useState([]);
+  const [optionShouldMatch, setOptionShouldMatch] = useState([]);
+  const [optionFilterMatch, setOptionFilterMatch] = useState([]);
   const [optionsSearchText, setOptionsSearchText] = useState('');
-  const [values, setValues] = useState(options.map(o => (o.values || []).map(v => ({
-    value: v,
-    display: String(v),
-    id: String(v).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
-    type: typeof v,
-    attribute: o.option,
-    isIncluded: true,
-    isSelected: false,
-    shouldMatch: true,
-  }))));
-  const [shownValues, setShownValues] = useState(options.map(o => o.values.length > 6 ? 5 : o.values.length));
+  const [values, setValues] = useState([]);
+  const [shownValues, setShownValues] = useState([]);
   const [conjunctions, setConjunctions] = useState([]);
 
   const MIN_ITEMS_SHOWN = 5;
@@ -47,6 +38,23 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
       document.removeEventListener('mousedown', handleClicksOutsideComponent);
     };
   });
+
+  useEffect(() => {
+    setDisplayOptions(options.map((o, i) => !i));
+    setOptionShouldMatch(options.map(o => true));
+    setOptionFilterMatch(options.map(o => true));
+    setValues(options.map(o => (o.values || []).map(v => ({
+      value: v,
+      display: String(v),
+      id: String(v).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
+      type: typeof v,
+      attribute: o.option,
+      isIncluded: true,
+      isSelected: false,
+      shouldMatch: true,
+    }))));
+    setShownValues(options.map(o => o.values.length > 6 ? 5 : o.values.length));
+  }, [options]);
 
   const itemsListWidth = inputField && inputField.current ? inputField.current.clientWidth - 14 : MAX_DROPDOWN_WIDTH;
   const dropdownWidth = Math.min(itemsListWidth, MAX_DROPDOWN_WIDTH);
@@ -86,6 +94,7 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
     //   setConjunctions(cnjctns);
     // }
     setFilterItems(fltrItems);
+    if (onChange) onChange(fltrItems);
     // .map((matches, isMatch) => Object.keys(matches).map(attrib => {
     //   const attribValues = matches[attrib].values;
     //   const hasMany = attribValues.length > 1;
@@ -170,6 +179,7 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
     setConjunctions(cnjctns);
     setFilterItems(fltrItems);
     setValues(vals);
+    if (onChange) onChange(fltrItems);
   }
 
   const changeConjunction = (idx, operator) => setConjunctions(conjunctions.map((conj, i) => i === idx ? operator : conj));

@@ -1,0 +1,18 @@
+{
+  "schemaType": "NERDLET",
+  "id": "http-errors",
+  "displayName": "HTTP Errors",
+  "description": "HTTP Errors",
+  "context": {
+    "entities": [
+      {
+        "domain": "VIDEO",
+        "type": "ROKU_SYSTEM"
+      },
+      {
+        "domain": "VIDEO",
+        "type": "ROKU_VIDEO"
+      }
+    ]
+  }
+}
