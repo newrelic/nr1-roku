@@ -36,7 +36,7 @@ queries.affectedUserRate = removeWhiteapces(`
 `);
 
 queries.errorsList = removeWhiteapces(`
-  SELECT *
+  SELECT domain, deviceModel, countryCode, method, status, httpCode
   FROM RokuSystem 
   WHERE actionName = 'HTTP_ERROR' 
     OR (actionName = 'HTTP_RESPONSE' AND (httpCode >= 400 OR httpCode <= 0))

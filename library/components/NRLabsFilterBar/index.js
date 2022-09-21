@@ -9,13 +9,12 @@ import Label from './label';
 import Conjunction from './conjunction';
 import Value from './value';
 
-const NRLabsFilterBar = ({ options, filters, onChange }) => {
+const NRLabsFilterBar = ({ options, onChange }) => {
   const thisComponent = useRef();
   const inputField = useRef();
   const [showItemsList, setShowItemsList] = useState(false);
-  // const [selectedItems, setSelectedItems] = useState([]);
   const [filterItems, setFilterItems] = useState([]);
-  const [currentGroup, setCurrentGroup] = useState('');
+  const [filterString, setFilterString] = useState('');
   const [searchTexts, setSearchTexts] = useState([]);
   const [displayOptions, setDisplayOptions] = useState([]);
   const [optionShouldMatch, setOptionShouldMatch] = useState([]);
@@ -24,6 +23,7 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
   const [values, setValues] = useState([]);
   const [shownValues, setShownValues] = useState([]);
   const [conjunctions, setConjunctions] = useState([]);
+  const lastGroup = useRef('');
 
   const MIN_ITEMS_SHOWN = 5;
   const MAX_DROPDOWN_WIDTH = 360;
@@ -39,7 +39,7 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
     };
   });
 
-  useEffect(() => {
+  useEffect(() => {console.log('options', options)
     setDisplayOptions(options.map((o, i) => !i));
     setOptionShouldMatch(options.map(o => true));
     setOptionFilterMatch(options.map(o => true));
@@ -47,7 +47,7 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
       value: v,
       display: String(v),
       id: String(v).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
-      type: typeof v,
+      type: o.type,
       attribute: o.option,
       isIncluded: true,
       isSelected: false,
@@ -56,22 +56,26 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
     setShownValues(options.map(o => o.values.length > 6 ? 5 : o.values.length));
   }, [options]);
 
+  useEffect(() => {
+    const fltrStr = updateFilterString();
+    if (fltrStr !== filterString) {
+      setFilterString(fltrStr);
+      if (onChange) onChange(fltrStr);
+    }
+  }, [filterItems, conjunctions, optionShouldMatch]);
+
   const itemsListWidth = inputField && inputField.current ? inputField.current.clientWidth - 14 : MAX_DROPDOWN_WIDTH;
   const dropdownWidth = Math.min(itemsListWidth, MAX_DROPDOWN_WIDTH);
   const checkboxWidth = (dropdownWidth - 32) / 2;
 
   const checkHandler = (optionIdx, valueIdx) => {
     const vals = [...values];
-    // const cnjctns = [...conjunctions];
     vals[optionIdx][valueIdx]['isSelected'] = !vals[optionIdx][valueIdx]['isSelected'];
-    // setValues(values.map((vals, i) => vals.map((val, j) => i === optionIdx && j === valueIdx ? {...values[i][j], isSelected: !values[i][j]['isSelected']} : values[i][j])));
     setValues(vals);
     const fltrItems = vals.reduce((qry, opt, i) => {
       opt.reduce((qry, val, j) => {
         if (!val.isSelected) return qry;
         const idx = +!val.shouldMatch;
-        // if (!(val.attribute in qry[idx])) qry[idx][val.attribute] = {optionIndex: i, type: val.type, values: []};
-        // qry[idx][val.attribute].values.push(val.value);
         if (!(val.attribute in qry[idx])) qry[idx][val.attribute] = {
           attribute: val.attribute,
           optionIndex: i, 
@@ -86,27 +90,8 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
     }, [{}, {}])
     .reduce((fi, matches) => Object.keys(matches).reduce((fi, opt) => [...fi, matches[opt]] , fi), []);
     
-    // if (fltrItems.length > 1 && conjunctions.length < fltrItems.length - 1) setConjunctions([...conjunctions, 'AND']);
-    
     if (conjunctions.length < fltrItems.length) setConjunctions([...conjunctions, 'AND']);
-    // {
-    //   cnjctns.push('AND');
-    //   setConjunctions(cnjctns);
-    // }
-    setFilterItems(fltrItems);
-    if (onChange) onChange(fltrItems);
-    // .map((matches, isMatch) => Object.keys(matches).map(attrib => {
-    //   const attribValues = matches[attrib].values;
-    //   const hasMany = attribValues.length > 1;
-    //   const surround = matches[attrib].type === 'string' ? `'` : '';
-    //   const joinStr = `${surround}, `;
-    //   const operator = isMatch 
-    //   ? hasMany ? 'IN' : '=' 
-    //   : hasMany ? 'NOT IN' : '!=';
-    //   const valuesStr = `${hasMany ? '(' : ''}${surround}${attribValues.join(joinStr)}${surround}${hasMany ? ')' : ''}`;
-    //   return `${attrib} ${operator} ${valuesStr}`;
-    // })).flat()
-    
+    setFilterItems(fltrItems); 
   }
 
   const updateOptionsSearchText = evt => {
@@ -156,7 +141,6 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
     const hasMany = attribValues.length > 1;
     const surround = item.type === 'string' ? `'` : '';
     const joinStr = `${surround}, `;
-    // const operator = item.matchType 
     const operator = optionShouldMatch[item.optionIndex] 
     ? hasMany ? 'IN' : '=' 
     : hasMany ? 'NOT IN' : '!=';
@@ -171,16 +155,15 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
     const vals = values.map((opt, i) => i === optIdx ? opt.map(val => ({...val, isSelected: false, shouldMatch: true})) : opt);
     fltrItems.splice(idx, 1);
     cnjctns.splice(idx, 1);
-    // if (cnjctns.length > fltrItems.length/2) {
-    //   const cnjIdx = idx ? idx - 1 : idx;
-    //   cnjctns.splice(cnjIdx, 1);
-    //   setConjunctions(cnjctns);
-    // }
     setConjunctions(cnjctns);
     setFilterItems(fltrItems);
     setValues(vals);
-    if (onChange) onChange(fltrItems);
   }
+
+  const updateFilterString = () => 
+    filterItems.length
+      ? filterItems.map((item, i) => `${filterItemStr(item)} ${i < filterItems.length - 1 ? conjunctions[i] : ''}`).join(' ')
+      : '';
 
   const changeConjunction = (idx, operator) => setConjunctions(conjunctions.map((conj, i) => i === idx ? operator : conj));
 
@@ -188,9 +171,16 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
     evt.stopPropagation();
     setOptionShouldMatch(optionShouldMatch.map((type, i) => i === idx ? shouldMatch : type));
   }
-  // i < filterItems.length - 1 && conjunctions.length > Math.floor(i/2)
-  // {filterItems.length !== 1 && i !== filterItems.length - 1 ? <Conjunction operator={conjunctions[i-1]} onChange={operator => changeConjunction(i-1, operator)} /> : ''}
-  // 
+
+  const groupBar = group => {
+    lastGroup.current = group;
+    return (
+      <div className="nrlabs-filter-bar-list-group">
+        {group}
+      </div>
+    );
+  }
+
   return (
     <div className="nrlabs-filter-bar" ref={thisComponent}>
       <div className="nrlabs-filter-bar-input-field" ref={inputField}>
@@ -213,34 +203,37 @@ const NRLabsFilterBar = ({ options, filters, onChange }) => {
         ? (
           <div className="nrlabs-filter-bar-list" style={{width: dropdownWidth}}>
             {options.map((option, i) => optionFilterMatch[i] ? (
-              <div className="nrlabs-filter-bar-list-options">
-                <div className="nrlabs-filter-bar-list-option" onClick={() => optionClickHandler(i)}>
-                  <img src={displayOptions[i] ? OpenIcon : CloseIcon} alt="show or hide options" />
-                  <span>{option.option}</span>
-                  {selectedValuesCounter(i)}
-                  {displayOptions[i] ? (
-                    <span className={`nrlabs-filter-bar-list-option-picker ${!selectedValuesCount(i) ? 'lighten' : ''}`}>
-                      <span className={`equal ${optionShouldMatch[i] ? 'selected' : ''}`} onClick={evt => changeMatchType(i, true, evt)} />
-                      <span className={`not-equal ${!optionShouldMatch[i] ? 'selected' : ''}`} onClick={evt => changeMatchType(i, false, evt)} />
-                    </span>
+              <>
+                {option.group && option.group !== lastGroup.current ? groupBar(option.group) : null}
+                <div className="nrlabs-filter-bar-list-options">
+                  <div className="nrlabs-filter-bar-list-option" onClick={() => optionClickHandler(i)}>
+                    <img src={displayOptions[i] ? OpenIcon : CloseIcon} alt="show or hide options" />
+                    <span>{option.option}</span>
+                    {selectedValuesCounter(i)}
+                    {displayOptions[i] ? (
+                      <span className={`nrlabs-filter-bar-list-option-picker ${!selectedValuesCount(i) ? 'lighten' : ''}`}>
+                        <span className={`equal ${optionShouldMatch[i] ? 'selected' : ''}`} onClick={evt => changeMatchType(i, true, evt)} />
+                        <span className={`not-equal ${!optionShouldMatch[i] ? 'selected' : ''}`} onClick={evt => changeMatchType(i, false, evt)} />
+                      </span>
+                      ) : null}
+                  </div>
+                  {displayOptions[i] ? 
+                  <>
+                  <div className="nrlabs-filter-bar-list-option-search">
+                    <img src={SearchIcon} alt="search options" />
+                    <input type="text" style={{backgroundColor: '#FFF'}} value={searchTexts[i]} onChange={evt => updateSearchText(evt, i)} />
+                  </div>
+                  <div className="nrlabs-filter-bar-list-option-values">
+                    {shownAndIncluded(values[i], i).map((value, j) => <Value value={value} width={checkboxWidth} optionIndex={i} valueIndex={j} onChange={checkHandler} />)}
+                    {includedValuesCount(values[i]) > shownValues[i] ? (
+                      <div className="nrlabs-filter-bar-list-option-value" style={{width: checkboxWidth}}>
+                        <a onClick={evt => updateShownValues(evt, i)}>{`Show ${includedValuesCount(values[i]) - shownValues[i]} more...`}</a>
+                      </div>
                     ) : null}
+                  </div>
+                  </> : null}
                 </div>
-                {displayOptions[i] ? 
-                <>
-                <div className="nrlabs-filter-bar-list-option-search">
-                  <img src={SearchIcon} alt="search options" />
-                  <input type="text" style={{backgroundColor: '#FFF'}} value={searchTexts[i]} onChange={evt => updateSearchText(evt, i)} />
-                </div>
-                <div className="nrlabs-filter-bar-list-option-values">
-                  {shownAndIncluded(values[i], i).map((value, j) => <Value value={value} width={checkboxWidth} optionIndex={i} valueIndex={j} onChange={checkHandler} />)}
-                  {includedValuesCount(values[i]) > shownValues[i] ? (
-                    <div className="nrlabs-filter-bar-list-option-value" style={{width: checkboxWidth}}>
-                      <a onClick={evt => updateShownValues(evt, i)}>{`Show ${includedValuesCount(values[i]) - shownValues[i]} more...`}</a>
-                    </div>
-                  ) : null}
-                </div>
-                </> : null}
-              </div>
+              </>
             ) : null)}
           </div>
           )
@@ -257,7 +250,6 @@ NRLabsFilterBar.propTypes = {
     values: PropTypes.array,
     group: PropTypes.string,
   })),
-  filters: PropTypes.string,
   onChange: PropTypes.func,
 };
 

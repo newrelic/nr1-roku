@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -13,35 +13,41 @@ import {
   TableRowCell,
 } from 'nr1';
 
-const QueryTable = ({ accountIds, query, title }) => {
-  const [loading, setLoading] = useState(false);
+import { formatTimestamp } from '../../utils/datetime';
+
+const QueryTable = ({ accountId, baseQuery, whereClause, queryTime, title }) => {
   const [items, setItems] = useState([]);
   const [attributes, setAttributes] = useState([]);
+  const [subtitle, setSubtitle] = useState('');
 
   useEffect(() => {
-    const loadData = async () => {console.log('query table', accountIds, query)
-      setLoading(true);
-      const {data: [{data, metadata}] = [{}]} = await NrqlQuery.query({ accountIds, query });
-      if (!data || !metadata) {
-        setLoading(false);
+    const loadData = async () => {
+      const accountIds = [accountId];
+      const query = `${baseQuery} ${whereClause} ${queryTime}`;
+      const {data: [{data, metadata} = {}], error, loading} = await NrqlQuery.query({ accountIds, query });
+      console.log('query table response', data, metadata, error, loading);
+      if (error || !data || !metadata) {
+        setItems([]);
+        setAttributes([]);
+        setSubtitle('');
         console.log('ERROR loading query table results');
         return;
       }
-      console.log('data', data)
       setItems(data);
       setAttributes(Object.keys(metadata.units_formatting).filter(u => !(u === 'x' || u === 'y')));
+      
+      if ('timeRange' in metadata) setSubtitle(formatSubtitle(metadata.timeRange));
     }
     
-    if (!loading && query) loadData();
-  }, [accountIds, query]);
+    loadData();
+  }, [accountId, whereClause, queryTime]);
 
-  const formatTimestamp = timestamp => Intl.DateTimeFormat('default', {
-    month: 'short', day: 'numeric',
-    hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(new Date(timestamp));
+  const formatSubtitle = ({begin_time: begin, end_time: end}) => `${formatTimestamp(begin)} - ${formatTimestamp(end)}`;
+  
   
   return (
     <Card>
-      <CardHeader title={title} subtitle="" />
+      <CardHeader title={title} subtitle={subtitle} />
       <CardBody>
         <Table items={items} rowCount={items.length}>
           <TableHeader>
@@ -65,8 +71,10 @@ const QueryTable = ({ accountIds, query, title }) => {
 }
 
 QueryTable.propTypes = {
-  accountIds: PropTypes.array,
-  query: PropTypes.string,
+  accountId: PropTypes.number,
+  baseQuery: PropTypes.string,
+  whereClause: PropTypes.string,
+  queryTime: PropTypes.string,
   title: PropTypes.string,
 };
 
