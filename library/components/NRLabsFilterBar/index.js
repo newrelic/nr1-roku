@@ -39,7 +39,7 @@ const NRLabsFilterBar = ({ options, onChange }) => {
     };
   });
 
-  useEffect(() => {console.log('options', options)
+  useEffect(() => {
     setDisplayOptions(options.map((o, i) => !i));
     setOptionShouldMatch(options.map(o => true));
     setOptionFilterMatch(options.map(o => true));

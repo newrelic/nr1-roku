@@ -25,7 +25,7 @@ const QueryTable = ({ accountId, baseQuery, whereClause, queryTime, title }) => 
       const accountIds = [accountId];
       const query = `${baseQuery} ${whereClause} ${queryTime}`;
       const {data: [{data, metadata} = {}], error, loading} = await NrqlQuery.query({ accountIds, query });
-      console.log('query table response', data, metadata, error, loading);
+      // console.log('query table response', data, metadata, error, loading);
       if (error || !data || !metadata) {
         setItems([]);
         setAttributes([]);
