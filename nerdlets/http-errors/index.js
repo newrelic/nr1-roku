@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { AutoSizer, nerdlet, usePlatformState } from 'nr1';
 
@@ -9,8 +9,10 @@ const HTTPErrorsNerdlet = () => {
   nerdlet.setConfig({ accountPicker: true });
   const [{ accountId, timeRange }] = usePlatformState();
 
-  return (
-    <Home 
+  const cachedHome = useRef(null);
+
+  useEffect(() => {
+    cachedHome.current = <Home 
       accountId={accountId} 
       timeRange={timeRange} 
       summary={{
@@ -29,8 +31,10 @@ const HTTPErrorsNerdlet = () => {
         {title: 'Users Affected Rate %', type: 'line', query: queries.affectedUserRate},
       ]}
       tableQueries={[queries.errorsList]}
-    />
-  );
+    />;
+  }, [accountId, timeRange.begin_time, timeRange.end_time, timeRange.duration]);
+
+  return cachedHome.current;
 }
 
 export default HTTPErrorsNerdlet;

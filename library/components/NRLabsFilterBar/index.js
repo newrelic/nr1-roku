@@ -140,7 +140,7 @@ const NRLabsFilterBar = ({ options, onChange }) => {
     const attribValues = item.valueIndexes.map(valIdx => values[item.optionIndex][valIdx]['value']);
     const hasMany = attribValues.length > 1;
     const surround = item.type === 'string' ? `'` : '';
-    const joinStr = `${surround}, `;
+    const joinStr = `${surround}, ${surround}`;
     const operator = optionShouldMatch[item.optionIndex] 
     ? hasMany ? 'IN' : '=' 
     : hasMany ? 'NOT IN' : '!=';
@@ -180,7 +180,7 @@ const NRLabsFilterBar = ({ options, onChange }) => {
       </div>
     );
   }
-
+  
   return (
     <div className="nrlabs-filter-bar" ref={thisComponent}>
       <div className="nrlabs-filter-bar-input-field" ref={inputField}>

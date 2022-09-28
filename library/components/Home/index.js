@@ -111,12 +111,10 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
 
   useEffect(() => {
     const selectedFacets = groups.reduce((acc, group) => (group.isSelected ? [...acc, group.item] : acc), []);
-    // console.log('selectedFacets', selectedFacets)
     setFacets(selectedFacets.length ? `FACET ${selectedFacets.join(', ')}` : '');
   }, [groups]);
 
   useEffect(() => {
-    // console.log('filters', filters)
     setWhereClause(filters ? `WHERE ${filters}` : '');
   }, [filters]);
 

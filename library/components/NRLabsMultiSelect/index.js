@@ -29,7 +29,6 @@ const NRLabsMultiSelect = ({ items, onChange }) => {
         acc.updatedItems.push(item);
         return acc;
       }, {updatedItems: [], updatedSelectedItems: []});
-      // onChange(items.map((item, i) => i === idx ? {...item, isSelected: !item.isSelected} : item));
       onChange(updatedItems);
       setSelectedItems(updatedSelectedItems);
     } else {
@@ -46,8 +45,6 @@ const NRLabsMultiSelect = ({ items, onChange }) => {
       console.error('NRLabs Multi Select Error: onChange is required!');
     }
   }
-
-  // const placeholderText = `Group by ${items.map(item => item.item).join(', ')}`;
 
   const itemsListWidth = inputField && inputField.current ? inputField.current.clientWidth - 14 : 'auto';
   const checkboxWidth = inputField && inputField.current ? (itemsListWidth - 32) / 2 : 'auto';

@@ -44,7 +44,6 @@ const QueryTable = ({ accountId, baseQuery, whereClause, queryTime, title }) => 
 
   const formatSubtitle = ({begin_time: begin, end_time: end}) => `${formatTimestamp(begin)} - ${formatTimestamp(end)}`;
   
-  
   return (
     <Card>
       <CardHeader title={title} subtitle={subtitle} />
