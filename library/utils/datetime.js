@@ -1,6 +1,12 @@
-export const formatTimestamp = timestamp => Intl.DateTimeFormat('default', {
-  month: 'short', day: 'numeric',
-  hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(new Date(timestamp));
+export const formatTimestamp = timestamp => {
+  const dt = new Date(timestamp);
+
+  return dt instanceof Date && !isNaN(dt)
+    ? Intl.DateTimeFormat('default', {
+      month: 'short', day: 'numeric',
+      hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(dt)
+    : '';
+}
 
 export const timeStringFromTimeRange = timeRange => timeRange.duration
   ? `SINCE ${Date.now() - timeRange.duration}`
