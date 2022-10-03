@@ -19,6 +19,7 @@ const QueryTable = ({ accountId, baseQuery, whereClause, queryTime, title }) => 
   const [items, setItems] = useState([]);
   const [attributes, setAttributes] = useState([]);
   const [subtitle, setSubtitle] = useState('');
+  const [sortingTypes, setSortingTypes] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -33,14 +34,19 @@ const QueryTable = ({ accountId, baseQuery, whereClause, queryTime, title }) => 
         console.log('ERROR loading query table results');
         return;
       }
+      const attribs = Object.keys(metadata.units_formatting).filter(u => !(u === 'x' || u === 'y'));
       setItems(data);
-      setAttributes(Object.keys(metadata.units_formatting).filter(u => !(u === 'x' || u === 'y')));
+      setAttributes(attribs);
+      setSortingTypes(attribs.map(a => TableHeaderCell.SORTING_TYPE.NONE));
       
       if ('timeRange' in metadata) setSubtitle(formatSubtitle(metadata.timeRange));
     }
     
     loadData();
   }, [accountId, whereClause, queryTime]);
+
+  const updateSortingType = (idx, nextSortingType) => 
+    setSortingTypes(sortingTypes.map((_, i) => i === idx ? nextSortingType : TableHeaderCell.SORTING_TYPE.NONE));
 
   const formatSubtitle = ({begin_time: begin, end_time: end}) => `${formatTimestamp(begin)} - ${formatTimestamp(end)}`;
   
@@ -50,8 +56,13 @@ const QueryTable = ({ accountId, baseQuery, whereClause, queryTime, title }) => 
       <CardBody>
         <Table items={items} rowCount={items.length}>
           <TableHeader>
-            {attributes.map(attribute => (
-              <TableHeaderCell width="fit-content" value={({ item }) => item[attribute]}>
+            {attributes.map((attribute, i) => (
+              <TableHeaderCell 
+                sortable
+                sortingType={sortingTypes[i] || TableHeaderCell.SORTING_TYPE.NONE}
+                onClick={(_, {nextSortingType}) => updateSortingType(i, nextSortingType)}
+                width="fit-content" 
+                value={({ item }) => item[attribute]}>
                 {attribute}
               </TableHeaderCell>
             ))}
