@@ -1,20 +1,19 @@
 const homeQueries = {};
 
-const removeWhiteapces = str => str.replace(/\s+/g, ' ');
-
-// const attribsQuery = `SELECT keySet() FROM RokuSystem ${qryTime}`;
-const valuesNrql = queryTime => 
-  `SELECT * FROM RokuSystem LIMIT MAX ${queryTime}`;
+homeQueries.uniqValuesQuery = (attribute, queryTime) => 
+  `SELECT uniques(${attribute}) AS uniques FROM RokuSystem LIMIT MAX ${queryTime}`;
 
 homeQueries.attributesQuery = queryTime =>
   `SELECT keySet() FROM RokuSystem ${queryTime}`;
 
-homeQueries.valuesQuery = queryTime => `
+homeQueries.valuesQuery = (attributes, queryTime) => `
   query ValuesQuery($accounts: [Int!]!) {
     actor {
-      values: nrql(accounts: $accounts, query: "${valuesNrql(queryTime)}") {
-        results
-      }
+      ${attributes.map((attr, i) => `
+        attr${i}: nrql(accounts: $accounts, query: "${homeQueries.uniqValuesQuery(attr, queryTime)}") {
+          results
+        }`
+      )}
     }
   }
 `;

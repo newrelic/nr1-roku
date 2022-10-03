@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
+import { Spinner } from 'nr1';
+
 import FilterByIcon from './filter.svg';
 import SearchIcon from './search.svg';
 import CloseIcon from './close.svg';
@@ -9,7 +11,7 @@ import Label from './label';
 import Conjunction from './conjunction';
 import Value from './value';
 
-const NRLabsFilterBar = ({ options, onChange }) => {
+const NRLabsFilterBar = ({ options, onChange, getValues }) => {
   const thisComponent = useRef();
   const inputField = useRef();
   const [showItemsList, setShowItemsList] = useState(false);
@@ -19,6 +21,7 @@ const NRLabsFilterBar = ({ options, onChange }) => {
   const [displayOptions, setDisplayOptions] = useState([]);
   const [optionShouldMatch, setOptionShouldMatch] = useState([]);
   const [optionFilterMatch, setOptionFilterMatch] = useState([]);
+  const [optionsLoading, setOptionsLoading] = useState([]);
   const [optionsSearchText, setOptionsSearchText] = useState('');
   const [values, setValues] = useState([]);
   const [shownValues, setShownValues] = useState([]);
@@ -43,6 +46,7 @@ const NRLabsFilterBar = ({ options, onChange }) => {
     setDisplayOptions(options.map((o, i) => !i));
     setOptionShouldMatch(options.map(o => true));
     setOptionFilterMatch(options.map(o => true));
+    setOptionsLoading(options.map(o => false));
     setValues(options.map(o => (o.values || []).map(v => ({
       value: v,
       display: String(v),
@@ -118,7 +122,26 @@ const NRLabsFilterBar = ({ options, onChange }) => {
 
   const shownCount = (count, show = MIN_ITEMS_SHOWN) => count > Math.max(show, MIN_ITEMS_SHOWN) ? Math.max(show, MIN_ITEMS_SHOWN) : count;
 
-  const optionClickHandler = idx => setDisplayOptions(displayOptions.map((d, i) => i === idx ? !d : d));
+  const optionClickHandler = async (option, idx) => {
+    const shouldLoad = !values[idx].length;
+    setDisplayOptions(displayOptions.map((d, i) => i === idx ? !d : d));
+    setOptionsLoading(optionsLoading.map((l, i) => i === idx && shouldLoad ? true : l));
+    if (shouldLoad) {
+      const vals = await getValues(option.option);
+      setValues(options.map((o, i) => i === idx ? (vals || []).map(v => ({
+        value: v,
+        display: String(v),
+        id: String(v).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
+        type: o.type,
+        attribute: o.option,
+        isIncluded: true,
+        isSelected: false,
+        shouldMatch: true,
+      })) : values[i]));
+      setShownValues(shownValues.map((s, i) => i === idx ? vals.length > 6 ? 5 : vals.length : s));
+      setOptionsLoading(optionsLoading.map((l, i) => i === idx ? false : l));
+    }
+  }
 
   const updateShownValues = (evt, idx) => {
     evt.preventDefault();
@@ -206,10 +229,10 @@ const NRLabsFilterBar = ({ options, onChange }) => {
               <>
                 {option.group && option.group !== lastGroup.current ? groupBar(option.group) : null}
                 <div className="nrlabs-filter-bar-list-options">
-                  <div className="nrlabs-filter-bar-list-option" onClick={() => optionClickHandler(i)}>
+                  <div className="nrlabs-filter-bar-list-option" onClick={() => optionClickHandler(option, i)}>
                     <img src={displayOptions[i] ? OpenIcon : CloseIcon} alt="show or hide options" />
                     <span>{option.option}</span>
-                    {selectedValuesCounter(i)}
+                    {optionsLoading[i] ? <Spinner inline /> : selectedValuesCounter(i)}
                     {displayOptions[i] ? (
                       <span className={`nrlabs-filter-bar-list-option-picker ${!selectedValuesCount(i) ? 'lighten' : ''}`}>
                         <span className={`equal ${optionShouldMatch[i] ? 'selected' : ''}`} onClick={evt => changeMatchType(i, true, evt)} />
@@ -251,6 +274,7 @@ NRLabsFilterBar.propTypes = {
     group: PropTypes.string,
   })),
   onChange: PropTypes.func,
+  getValues: PropTypes.func,
 };
 
 export default NRLabsFilterBar;

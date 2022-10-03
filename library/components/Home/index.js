@@ -46,63 +46,65 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
       const accountIds = [accountId];
       
       const {
-        data: [{data} = {}], error: errAttr, loading: loadAttr
+        data: [{data: dataAttr} = {}], error: errAttr, loading: loadAttr
       } = await NrqlQuery.query({ 
         accountIds, 
         query: homeQueries.attributesQuery(qryTime) 
       });
 
-      if (errAttr || !data.length) {
+      if (errAttr || !dataAttr || !dataAttr.length) {
         setLoading(false);
         console.log('unable to retrieve attributes');
         return;
       }
 
-      const [resp] = data;
-      const attrs = ['boolean', 'numeric', 'string'].reduce((acc, type) => {
-        const res = resp[`${type}Keys`];
-        if (res && res.length) res.reduce((_, key) => {
-          if (!isExcludedAttrib(key)) acc[key] = {type, values: {}};
-        });
-        return acc;
-      }, {});
-      // console.log('attrs', Object.keys(attrs).length, attrs)
-
-      const query = gql`${homeQueries.valuesQuery(qryTime)}`;
-      const variables = { accounts: accountIds };
-      const {
-        data: {actor: {values: {results: values} = {}} = {}} = {},
-        error: errVal,
-      } = await NerdGraphQuery.query({ query, variables });
-      
-      if (errVal || !values) {
-        setLoading(false);
-        console.log('ERROR loading attribute values', errVal);
-        return;
-      }
-      const attributes = values.reduce((acc, row) => {
-        Object.keys(row).reduce((_, attr) => {
-          if (isExcludedAttrib(attr)) return;
-          const val = row[attr];
-          if (val == null || val === "") return;
-          if (attr in acc && !(val in acc[attr]['values'])) acc[attr]['values'][val] = "";
-        });
-        return acc;
-      }, attrs);
-      // console.log('attributes', Object.keys(attributes).length, attributes)
-
-      const [recommended, other] = Object.keys(attributes).reduce((acc, attr) => {
-        const group = +(!groups.some(grp => grp.item === attr));
-        acc[group].push({
-          option: attr,
-          type: attributes[attr]['type'], 
-          values: Object.keys(attributes[attr]['values']), 
-          group: `${group ? 'other' : 'recommended'} filters`,
+      const [resp] = dataAttr;
+      const recAttrs = groups.map(grp => grp.item);
+      const [recs, other] = ['boolean', 'numeric', 'string'].reduce((acc, type) => {
+        const keys = resp[`${type}Keys`];
+        if (keys && keys.length) keys.reduce((_, key) => {
+          const group = +(!recAttrs.find(ga => ga === key));
+          if (!isExcludedAttrib(key)) acc[group].push({
+            option: key,
+            type,
+            values: [],
+            group: `${group ? 'other' : 'recommended'} filters`,
+          });
         });
         return acc;
       }, [[], []]);
 
-      setFilterOptions([...recommended, ...other]);
+      const query = gql`${homeQueries.valuesQuery(recAttrs, qryTime)}`;
+      const variables = { accounts: accountIds };
+      const {
+        data: {actor: recValues} = {},
+        error: errVal,
+      } = await NerdGraphQuery.query({ query, variables });
+      
+      if (errVal || !recValues) { 
+        setLoading(false);
+        console.log('ERROR loading attribute values', errVal);
+        return;
+      }
+      
+      const recommended = recAttrs.reduce((acc, attr, i) => {
+        const attrKey = `attr${i}`;
+        if (attrKey in recValues) {
+          const {results: [values] = []} = recValues[attrKey];
+          if (values && values.uniques) {
+            const recIdx = recs.findIndex(rec => rec.option === attr);
+            if (recIdx > -1) acc[recIdx]['values'] = values.uniques;
+          }
+        }
+        return acc;
+      }, recs);
+
+      // const [filterOpts, filterOptsLookup] = [...recommended, ...other].reduce((acc, filterOpt, i) => 
+      //   ([[...acc[0], filterOpt], {...acc[1], [filterOpt.option]: i}])
+      // , [[], {}]);
+      
+      const filterOpts = [...recommended, ...other];
+      setFilterOptions(filterOpts);
       setLoading(false);
     };
 
@@ -119,6 +121,16 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
   }, [filters]);
 
   const isExcludedAttrib = attr => /entity.|nr.|timestamp|actionName/.test(attr);
+  
+  const getValues = async option => {
+    const query = gql`${homeQueries.valuesQuery([option], queryTime)}`;
+    const variables = { accounts: [accountId] };
+    const {
+      data: {actor: {attr0: {results: [vals]}} = {results: []}} = {},
+      error: errVal,
+    } = await NerdGraphQuery.query({ query, variables });
+    return vals && vals.uniques && vals.uniques.length ? vals.uniques : [];
+  };
 
   if (!accountId || accountId === 'cross-account')
     return (
@@ -137,7 +149,7 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
       <div className="wrapper">
         <div className="control-bar">
           <NRLabsMultiSelect items={groups} onChange={setGroups} />
-          <NRLabsFilterBar options={filterOptions} filters={filters} onChange={setFilters} />
+          <NRLabsFilterBar options={filterOptions} filters={filters} onChange={setFilters} getValues={getValues} />
         </div>
       </div>
 
