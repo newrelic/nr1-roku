@@ -15,7 +15,7 @@ queries.errorRate = removeWhiteapces(`
       OR (actionName = 'HTTP_RESPONSE' AND httpCode >= 400))
     /filter(count(*), 
       WHERE actionName in ('HTTP_CONNECT', 'HTTP_REQUEST')) 
-    AS 'Error Rate' 
+    AS 'Error Rate (%)' 
   FROM RokuSystem
 `);
 
