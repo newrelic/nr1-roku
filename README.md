@@ -1,4 +1,4 @@
-# nr1-group-bar-demo
+# nr1-roku
 
 ## Getting started
 
