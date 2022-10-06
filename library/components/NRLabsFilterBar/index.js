@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { Spinner } from 'nr1';
@@ -27,6 +27,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
   const [shownValues, setShownValues] = useState([]);
   const [conjunctions, setConjunctions] = useState([]);
   const lastGroup = useRef('');
+  const searchTimeout = useRef();
 
   const MIN_ITEMS_SHOWN = 5;
   const MAX_DROPDOWN_WIDTH = 360;
@@ -106,16 +107,24 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     setShowItemsList(true);
   }
 
-  const updateSearchText = (evt, idx) => {
+  const updateSearchText = (evt, option, idx) => {
     const searchText = evt.target.value;
-    const searches = [...searchTexts];
-    searches[idx] = searchText;
+    setSearchTexts(searchTexts.map((st, i) => i === idx ? searchText : st));
     const searchRE = new RegExp(searchText, 'i');
-    const vals = values.map((val, i) => i === idx ? val.map(v => ({...v, isIncluded: searchRE.test(v.display)})) : val);
-    const shown = shownValues.map((show, i) => i === idx ? shownCount(includedValuesCount(vals[idx]), show) : show);
-    setSearchTexts(searches);
-    setValues(vals);
-    setShownValues(shown);
+
+    clearTimeout(searchTimeout.current);
+    if (searchText.trim()) {
+      searchTimeout.current = setTimeout(async () => {
+        setOptionsLoading(optionsLoading.map((l, i) => i === idx ? true : l));
+        const updatedValues = await loadValuesLive(option.option, option.type, idx, searchText, searchRE);
+        setValues(options.map((_, i) => i === idx ? updatedValues : values[i]));
+        setShownValues(shownValues.map((s, i) => i === idx ? updatedValues.length > 6 ? 5 : updatedValues.length : s));
+        setOptionsLoading(optionsLoading.map((l, i) => i === idx ? false : l));
+      }, 500);
+    } else {
+      setValues(values.map((val, i) => i === idx ? val.map(v => ({...v, isIncluded: true})) : val));
+      setShownValues(shownValues.map((show, i) => i === idx ? shownCount(values[idx].length, show) : show))
+    }
   }
 
   const includedValuesCount = arr => arr.filter(val => val.isIncluded).length;
@@ -126,21 +135,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     const shouldLoad = !values[idx].length;
     setDisplayOptions(displayOptions.map((d, i) => i === idx ? !d : d));
     setOptionsLoading(optionsLoading.map((l, i) => i === idx && shouldLoad ? true : l));
-    if (shouldLoad) {
-      const vals = await getValues(option.option);
-      setValues(options.map((o, i) => i === idx ? (vals || []).map(v => ({
-        value: v,
-        display: String(v),
-        id: String(v).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
-        type: o.type,
-        attribute: o.option,
-        isIncluded: true,
-        isSelected: false,
-        shouldMatch: true,
-      })) : values[i]));
-      setShownValues(shownValues.map((s, i) => i === idx ? vals.length > 6 ? 5 : vals.length : s));
-      setOptionsLoading(optionsLoading.map((l, i) => i === idx ? false : l));
-    }
+    if (shouldLoad) loadValues(option, idx);
   }
 
   const updateShownValues = (evt, idx) => {
@@ -151,6 +146,55 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
   }
 
   const shownAndIncluded = (vals, idx) => [...vals].reduce((acc, cur) => cur.isIncluded && acc.length < shownValues[idx] ? [...acc, cur] : acc, []);
+
+  const loadValues = async (option, idx) => {
+    const vals = await getValues(option.option);
+    setValues(options.map((o, i) => i === idx ? (vals || []).map(v => ({
+      value: v,
+      display: String(v),
+      id: String(v).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
+      type: o.type,
+      attribute: o.option,
+      isIncluded: true,
+      isSelected: false,
+      shouldMatch: true,
+    })) : values[i]));
+    setShownValues(shownValues.map((s, i) => i === idx ? vals.length > 6 ? 5 : vals.length : s));
+    setOptionsLoading(optionsLoading.map((l, i) => i === idx ? false : l));
+  }
+
+  const loadValuesLive = async (attr, type, idx, searchStr, searchRE) => {
+    let cond = ` WHERE `;
+    if (type === 'string') {
+      cond += ` ${attr} LIKE '%${searchStr}%' `;
+    } else {
+      const matches = [...searchStr.matchAll(/([><]+)\s{0,}([.-\d]{1,})/g)];
+      if (matches.length) {
+        cond += 
+          matches.map(([, op, num]) => op && !isNaN(num) 
+            ? ` ${attr} ${op} ${Number(num)} `
+            : '').join(' AND ');
+      } else {
+        const sanitizedSearchStr = searchStr.replace(/[^\w\s]/gi, '');
+        cond += ` ${attr} = ${sanitizedSearchStr ? sanitizedSearchStr : 'false'} `;
+      }
+    }
+    const vals = await getValues(attr, cond);
+    const prevValues = values[idx].map(v => ({...v, isIncluded: searchRE.test(v.display) || vals.includes(v.value)}))
+    return vals.reduce((acc, val) => {
+      if (!acc.some(v => v.value === val)) acc.push({
+        value: val,
+        display: String(val),
+        id: String(val).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
+        type: type,
+        attribute: attr,
+        isIncluded: true,
+        isSelected: false,
+        shouldMatch: true,
+      });
+      return acc;
+    }, prevValues);
+  };
 
   const selectedValuesCounter = idx => {
     const count = selectedValuesCount(idx);
@@ -244,7 +288,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
                   <>
                   <div className="nrlabs-filter-bar-list-option-search">
                     <img src={SearchIcon} alt="search options" />
-                    <input type="text" style={{backgroundColor: '#FFF'}} value={searchTexts[i]} onChange={evt => updateSearchText(evt, i)} />
+                    <input type="text" style={{backgroundColor: '#FFF'}} value={searchTexts[i]} onChange={evt => updateSearchText(evt, option, i)} />
                   </div>
                   <div className="nrlabs-filter-bar-list-option-values">
                     {shownAndIncluded(values[i], i).map((value, j) => <Value value={value} width={checkboxWidth} optionIndex={i} valueIndex={j} onChange={checkHandler} />)}

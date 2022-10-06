@@ -98,11 +98,6 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
         }
         return acc;
       }, recs);
-
-      // const [filterOpts, filterOptsLookup] = [...recommended, ...other].reduce((acc, filterOpt, i) => 
-      //   ([[...acc[0], filterOpt], {...acc[1], [filterOpt.option]: i}])
-      // , [[], {}]);
-      
       const filterOpts = [...recommended, ...other];
       setFilterOptions(filterOpts);
       setLoading(false);
@@ -122,13 +117,12 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
 
   const isExcludedAttrib = attr => /entity.|nr.|timestamp|actionName/.test(attr);
   
-  const getValues = async option => {
-    const query = gql`${homeQueries.valuesQuery([option], queryTime)}`;
+  const getValues = async (option, conditions) => {
+    const query = gql`${homeQueries.valuesQuery([option], queryTime, conditions)}`;
     const variables = { accounts: [accountId] };
-    const {
-      data: {actor: {attr0: {results: [vals]}} = {results: []}} = {},
-      error: errVal,
-    } = await NerdGraphQuery.query({ query, variables });
+    const { data, error } = await NerdGraphQuery.query({ query, variables });
+    if (error) return [];
+    const {actor: {attr0: {results: [vals]} = {results: []}} = {}} = data;
     return vals && vals.uniques && vals.uniques.length ? vals.uniques : [];
   };
 
