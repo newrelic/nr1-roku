@@ -7,7 +7,12 @@ const Conjunction = ({ operator, isHint, onChange }) => {
 
   useEffect(() => {
     function handleClicksOutsideComponent(evt) {
-      if (showPicker && thisComponent && !thisComponent.current.contains(evt.target)) setShowPicker(false);
+      if (
+        showPicker &&
+        thisComponent &&
+        !thisComponent.current.contains(evt.target)
+      )
+        setShowPicker(false);
     }
     document.addEventListener('mousedown', handleClicksOutsideComponent);
 
@@ -16,29 +21,43 @@ const Conjunction = ({ operator, isHint, onChange }) => {
     };
   });
 
-  const clickHandler = evt => {
+  const clickHandler = (evt) => {
     evt.preventDefault();
     evt.stopPropagation();
     setShowPicker(!showPicker);
-  }
+  };
 
   const changeHandler = (selection, evt) => {
     evt.preventDefault();
     evt.stopPropagation();
     if (onChange && selection !== operator) onChange(selection);
-  }
+  };
 
   const options = ['AND', 'OR'];
-  
+
   return (
-    <span className={`nrlabs-filter-bar-conjunction ${isHint ? 'hint' : ''}`} onClick={clickHandler} ref={thisComponent}>
+    <span
+      className={`nrlabs-filter-bar-conjunction ${isHint ? 'hint' : ''}`}
+      onClick={clickHandler}
+      ref={thisComponent}
+    >
       {operator}
-      {showPicker && (<span className="nrlabs-filter-bar-conjunction-picker">
-        {options.map((opt, i) => <span key={i} className={opt === operator ? 'selected' : ''} onClick={evt => changeHandler(opt, evt)}>{opt}</span>)}
-      </span>)}
+      {showPicker && (
+        <span className="nrlabs-filter-bar-conjunction-picker">
+          {options.map((opt, i) => (
+            <span
+              key={i}
+              className={opt === operator ? 'selected' : ''}
+              onClick={(evt) => changeHandler(opt, evt)}
+            >
+              {opt}
+            </span>
+          ))}
+        </span>
+      )}
     </span>
   );
-}
+};
 
 Conjunction.propTypes = {
   operator: PropTypes.string,
@@ -47,5 +66,3 @@ Conjunction.propTypes = {
 };
 
 export default Conjunction;
-
-

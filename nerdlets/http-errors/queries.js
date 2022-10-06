@@ -1,6 +1,6 @@
 const queries = {};
 
-const removeWhiteapces = str => str.replace(/\s+/g, ' ');
+const removeWhiteapces = (str) => str.replace(/\s+/g, ' ');
 
 queries.errors = removeWhiteapces(`
   SELECT count(*) as 'Errors' 

@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "scripts": {
     "start": "nr1 nerdpack:serve",
-    "test": "exit 0"
+    "test": "exit 0",
+    "eslint-check": "eslint library/ nerdlets/",
+    "eslint-fix": "eslint library/ nerdlets/ --fix"
   },
   "dependencies": {
     "prop-types": "15.7.2",
@@ -15,5 +17,12 @@
     "last 2 versions",
     "not ie < 11",
     "not dead"
-  ]
+  ],
+  "devDependencies": {
+    "@newrelic/eslint-plugin-newrelic": "^0.3.1",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "eslint": "^6.8.0",
+    "prettier": "^2.7.1"
+  }
 }

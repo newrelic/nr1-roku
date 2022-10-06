@@ -2,8 +2,8 @@
   width: 100%;
 
   .nrlabs-filter-bar-input-field {
-    background-color: #F3F4F4;
-    border: 1px solid #CDD3D5;
+    background-color: #f3f4f4;
+    border: 1px solid #cdd3d5;
     border-radius: 4px;
     padding: 8px 8px 2px;
     display: flex;
@@ -26,9 +26,9 @@
         justify-content: center;
         align-items: center;
         padding: 1px 4px;
-        background-color: #E1EDFF;
+        background-color: #e1edff;
         border-radius: 3px;
-        color: #0B6ACB;
+        color: #0b6acb;
         margin-right: 8px;
         margin-bottom: 6px;
 
@@ -61,8 +61,9 @@
 
         .nrlabs-filter-bar-conjunction-picker {
           position: absolute;
-          background: #FFFFFF;
-          box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.02), 0px 8px 16px 8px rgba(2, 3, 3, 0.05);
+          background: #ffffff;
+          box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.02),
+            0px 8px 16px 8px rgba(2, 3, 3, 0.05);
           border-radius: 4px;
           display: flex;
           gap: 3px;
@@ -70,18 +71,18 @@
 
           span {
             padding: 1px 4px;
-            background: #FFFFFF;
+            background: #ffffff;
             border-radius: 3px;
 
             &.selected {
-              background: #E8E8E8;
+              background: #e8e8e8;
             }
           }
         }
       }
 
       &.placeholder {
-        color: #6B757B;
+        color: #6b757b;
         margin-bottom: 6px;
         padding: 1px 4px;
         padding-left: 0;
@@ -90,7 +91,7 @@
 
     .nrlabs-filter-bar-input-field-search {
       flex-grow: 1;
-      
+
       input {
         background-color: transparent;
         border: 0;
@@ -102,20 +103,23 @@
     display: flex;
     flex-direction: column;
     padding: 4px 0;
-    background: #FFFFFF;
-    box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.02), 0px 8px 16px 8px rgba(2, 3, 3, 0.05);
+    background: #ffffff;
+    box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.02),
+      0px 8px 16px 8px rgba(2, 3, 3, 0.05);
     border-radius: 4px;
     position: absolute;
     max-height: 60vh;
     overflow-y: scroll;
     z-index: 1;
 
-    .nrlabs-filter-bar-list-group, .nrlabs-filter-bar-list-option, .nrlabs-filter-bar-list-option-search {
+    .nrlabs-filter-bar-list-group,
+    .nrlabs-filter-bar-list-option,
+    .nrlabs-filter-bar-list-option-search {
       display: flex;
       align-items: center;
       padding: 12px 16px;
       gap: 8px;
-      border-bottom: 1px solid #F3F4F4;
+      border-bottom: 1px solid #f3f4f4;
     }
 
     .nrlabs-filter-bar-list-group {
@@ -127,14 +131,13 @@
     }
 
     .nrlabs-filter-bar-list-option {
-
       span:first-of-type {
         cursor: pointer;
       }
 
       .nrlabs-filter-bar-list-option-picker {
         margin-left: auto;
-        background: #E7E9E9;
+        background: #e7e9e9;
         border-radius: 4px;
         display: flex;
         padding: 2px;
@@ -161,16 +164,16 @@
           }
 
           &.selected {
-            background-color: #FFFFFF;
+            background-color: #ffffff;
           }
         }
       }
     }
 
     .nrlabs-filter-bar-list-option-count {
-      background: #E7E9E9;
+      background: #e7e9e9;
       border-radius: 3px;
-      color: #535E65;
+      color: #535e65;
       padding: 0 4px;
     }
 
@@ -184,13 +187,13 @@
       grid-template-columns: 1fr 1fr;
       grid-gap: 8px;
       padding: 8px 16px;
-      border-bottom: 1px solid #CDD3D5;
+      border-bottom: 1px solid #cdd3d5;
 
       .nrlabs-filter-bar-list-option-value {
         align-items: center;
         display: inline-flex;
         position: relative;
-  
+
         label {
           padding-left: 8px;
           overflow: hidden;
@@ -200,8 +203,9 @@
 
         .nrlabs-filter-bar-list-option-picker {
           position: absolute;
-          background: #FFFFFF;
-          box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.02), 0px 8px 16px 8px rgba(2, 3, 3, 0.05);
+          background: #ffffff;
+          box-shadow: 0px 4px 4px 4px rgba(0, 0, 0, 0.02),
+            0px 8px 16px 8px rgba(2, 3, 3, 0.05);
           border-radius: 4px;
           display: flex;
           gap: 3px;
@@ -211,7 +215,7 @@
 
           span {
             padding: 1px 4px;
-            background: #FFFFFF;
+            background: #ffffff;
             border-radius: 3px;
             width: 18px;
             height: 18px;
@@ -227,7 +231,7 @@
             }
 
             &.selected {
-              background-color: #E8E8E8;
+              background-color: #e8e8e8;
             }
           }
         }
