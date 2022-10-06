@@ -1,17 +1,13 @@
 {
   "schemaType": "NERDLET",
   "id": "http-requests",
-  "displayName": "HTTP Requests",
-  "description": "HTTP Requests",
+  "displayName": "HTTP requests",
+  "description": "HTTP requests",
   "context": {
     "entities": [
       {
         "domain": "VIDEO",
         "type": "ROKU_SYSTEM"
-      },
-      {
-        "domain": "VIDEO",
-        "type": "ROKU_VIDEO"
       }
     ]
   }
