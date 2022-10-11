@@ -25,7 +25,7 @@ Value.propTypes = {
   width: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   optionIndex: PropTypes.number,
   valueIndex: PropTypes.number,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func
 };
 
 export default Value;

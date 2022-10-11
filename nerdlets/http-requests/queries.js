@@ -1,6 +1,6 @@
 const queries = {};
 
-const removeWhiteapces = (str) => str.replace(/\s+/g, ' ');
+const removeWhiteapces = str => str.replace(/\s+/g, ' ');
 
 queries.durationFirstByteTime = removeWhiteapces(`
   SELECT median(firstByteTime)  AS 'Duration (First Byte Time)'

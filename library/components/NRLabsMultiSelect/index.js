@@ -26,7 +26,7 @@ const NRLabsMultiSelect = ({ items, onChange }) => {
     };
   });
 
-  const checkHandler = (idx) => {
+  const checkHandler = idx => {
     if (onChange) {
       const { updatedItems, updatedSelectedItems } = items.reduce(
         (acc, item, i) => {
@@ -46,7 +46,7 @@ const NRLabsMultiSelect = ({ items, onChange }) => {
     }
   };
 
-  const removeHandler = (idx) => {
+  const removeHandler = idx => {
     if (onChange) {
       const selectedIndex = selectedItems[idx].index;
       onChange(
@@ -130,10 +130,10 @@ NRLabsMultiSelect.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       item: PropTypes.string,
-      isSelected: PropTypes.bool,
+      isSelected: PropTypes.bool
     })
   ),
-  onChange: PropTypes.func,
+  onChange: PropTypes.func
 };
 
 export default NRLabsMultiSelect;
