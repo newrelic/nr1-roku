@@ -1,38 +1,83 @@
-# nr1-roku
+# New Relic Roku HTTP Analytics
 
-## Manual Deployment
+New Relic [Roku observability agent](https://newrelic.com/instant-observability/roku) monitors the system- and video- level performance of Roku over the top (OTT) streaming applications and devices. Specifically, the agent offers insights into an application’s network connectivity, viewer journey, and overall functionality. 
 
-Open a command prompt in the app's directory and run the following commands.
+To enhance the experience of the agent, the HTTP Analytics UI will allow you profile and analyze your HTTP errors and durations of requests made by your Roku channel to your backend.
 
+## Landing Page
 
-```bash
-# Typically you will need to regenerate the uuid for the account to which you're deploying this app, use the following command
-nr1 nerdpack:uuid -gf [--profile=your_profile_name]
-# to see a list of APIkeys / profiles available in your development environment, run nr1 credentials:list
-# after regenerating your uuid publish to your account
-nr1 nerdpack:publish [--profile=your_profile_name]
-```
+You can access the UI by navigating to your Roku System entity types in the [entity explorer](https://docs.newrelic.com/docs/new-relic-solutions/new-relic-one/core-concepts/new-relic-explorer-view-performance-across-apps-services-hosts/).
 
-Visit [https://one.newrelic.com](https://one.newrelic.com), and launch your app in New Relic.
+Once in the entity, access your HTTP Analytics pages by naviating to them on the left nav bar.
 
-## Getting started
+The Error Analytics and HTTP Analytics tabs will contain key metrics for profiling the networking behavior of your Roku app.
 
+## Filter Bar
 
-1. Ensure that you have [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [NPM](https://www.npmjs.com/get-npm) installed. If you're unsure whether you have one or both of them installed, run the following commands. (If you have them installed, these commands return a version number; if not, the commands aren't recognized.)
+The top bar contains Grouping and Filtering capabilities.
+
+### Grouping
+The Group By box allows you to group the metrics on-screen by the 6 most common attributes used to analyze Roku HTTP data:
+
+- Domain
+- Country Code
+- Status
+- Device Model
+- HTTP Method
+- HTTP Response Code
+
+### Filtering
+The Filter By box allows you to search for and select any attribute value to filter the entire dashboard.
+
+You can begin by clicking the box to select an attribute and clicking the value you want to filter to.
+
+You can also begin by typing the name of the attribute you're looking for:
+
+If the attribute has a lot of possible values, you can search those as well by using the search bar inside of the dropdown. This is useful for cases like drilling into a specific device model or even UUID:
+
+If the attribute represents a range (typical examples are timing data or response codes), you can define a range in the search:
+
+## Open source license
+
+This project is distributed under the [Apache 2 license](https://github.com/newrelic/nr1-roku/blob/main/LICENSE).
+
+## Install using New Relic One Application Catalog
+
+This application is primarily designed to be installed via the New Relic Application Catalog.
+
+In [New Relic One](https://one.newrelic.com), navigate to your Apps section and click the Roku HTTP Analytics application. The Manage Access button in the top right will let you choose the account where you want to make this app visible. It will be visible to all users of that account.
+
+## Install using New Relic One CLI
+
+Roku HTTP Analytics is also an Open Source application. You can quickly and easily deploy it manually using the New Relic One CLI.
+
+Ensure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [npm](https://www.npmjs.com/get-npm) installed. If you're unsure whether you have them installed, run the following commands (they'll return version numbers if they're installed):
+
 ```bash
 git --version
 npm -v
 ```
-2. Install the [NR1 CLI](https://one.newrelic.com/launcher/developer-center.launcher) by going to [the developer center](https://one.newrelic.com/launcher/developer-center.launcher), and following the instructions to install and set up your New Relic development environment. This should take about 5 minutes.
-3. Execute the following command to clone this repository and run the code locally against your New Relic data:
+
+Install the [New Relic One CLI](https://one.newrelic.com/launcher/developer-center.launcher). Follow the instructions to set up your New Relic development environment
 
 ```bash
-nr1 nerdpack:clone -r https://github.com/newrelic/nr-labs-widget-pack.git
-cd nr-labs-widget-pack
+git clone https://github.com/newrelic/nr1-roku.git
+cd nr1-roku
+npm install
+nr1 nerdpack:uuid -gf
+nr1 nerdpack:publish
+nr1 nerdpack:subscribe  -C STABLE
+```
+This last command will subscribe the application to the account you've set as your default profile. You can check this using `nr1 profiles:default`. If you're not ready to deploy it to your account or want to test out changes you've made locally you can use:
+
+```bash
+git clone https://github.com/newrelic/nr1-roku.git
+cd nr1-roku
+npm install
+** Make Any Desired Changes **
+nr1 nerdpack:uuid -gf
 nr1 nerdpack:serve
 ```
-
-Visit [https://one.newrelic.com/?nerdpacks=local](https://one.newrelic.com/?nerdpacks=local) to launch your app locally.
 
 
 # Support
@@ -41,18 +86,21 @@ New Relic has open-sourced this project. This project is provided AS-IS WITHOUT 
 
 We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
 
+## Community
+
+New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorers Hub. You can find this project's topic/threads here:
+
+[https://discuss.newrelic.com/](https://discuss.newrelic.com/)
+
 ## Issues / enhancement requests
 
-Issues and enhancement requests can be submitted in the [Issues tab of this repository](../../issues). Please search for and review the existing open issues before submitting a new issue.
+Issues and enhancement requests can be submitted in the [Issues tab of this repository](https://github.com/newrelic/nr1-roku/issues). Please search for and review the existing open issues before submitting a new issue.
 
 ## Security
-
-As noted in our [security policy](https://github.com/newrelic/nr1-roku/security/policy), New Relic is committed to the privacy and security of our customers and their data. We believe that providing coordinated disclosure by security researchers and engaging with the security community are important means to achieve our security goals.
-
-If you believe you have found a security vulnerability in this project or any of New Relic's products or websites, we welcome and greatly appreciate you reporting it to New Relic through [HackerOne](https://hackerone.com/newrelic).
+This project adheres to the New Relic [security policy](https://github.com/newrelic/nr1-roku/security/policy).
 
 # Contributing
 
-Contributions are encouraged! If you submit an enhancement request, we'll invite you to contribute the change yourself. Please review our [Contributors Guide](CONTRIBUTING.md).
+Contributions are encouraged! If you submit an enhancement request, we'll invite you to contribute the change yourself. Please review our [Contributors Guide](https://github.com/newrelic/nr1-roku/blob/main/CONTRIBUTING.md).
 
-Keep in mind that when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. If you'd like to execute our corporate CLA, or if you have any questions, please drop us an email at opensource+nrlabswidgetpack@newrelic.com.
+Keep in mind that when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. If you'd like to execute our corporate CLA, or if you have any questions, please drop us an email at opensource+nr1-roku@newrelic.com
