@@ -93,7 +93,6 @@ nr1 nerdpack:uuid -gf
 nr1 nerdpack:serve
 ```
 
-
 # Support
 
 New Relic has open-sourced this project. This project is provided AS-IS WITHOUT WARRANTY OR DEDICATED SUPPORT. Issues and contributions should be reported to the project here on GitHub.
