@@ -10,7 +10,7 @@ const SummaryBar = ({
   summaryQueries,
   whereClause,
   queryTime,
-  title,
+  title
 }) => {
   const billboardStyles = { height: '60px', width: '96px' };
 
@@ -38,7 +38,7 @@ SummaryBar.propTypes = {
   summaryQueries: PropTypes.array,
   whereClause: PropTypes.string,
   queryTime: PropTypes.string,
-  title: PropTypes.string,
+  title: PropTypes.string
 };
 
 export default SummaryBar;

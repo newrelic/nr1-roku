@@ -22,30 +22,30 @@ const HttpRequestsNerdlet = () => {
             queries.durationFirstByteTime,
             queries.avgSysReqsPerSession,
             queries.requestDuration,
-            queries.avgAppReqsPerSession,
-          ],
+            queries.avgAppReqsPerSession
+          ]
         }}
         charts={[
           {
             title: 'Duration (First Byte Time)',
             type: 'line',
-            query: queries.durationFirstByteTime,
+            query: queries.durationFirstByteTime
           },
           {
             title: 'Avg Sys Requests Per Session',
             type: 'line',
-            query: queries.avgSysReqsPerSession,
+            query: queries.avgSysReqsPerSession
           },
           {
             title: 'Request Duration',
             type: 'line',
-            query: queries.requestDuration,
+            query: queries.requestDuration
           },
           {
             title: 'Avg App Requests Per Session',
             type: 'line',
-            query: queries.avgAppReqsPerSession,
-          },
+            query: queries.avgAppReqsPerSession
+          }
         ]}
         tableQueries={[]}
       />

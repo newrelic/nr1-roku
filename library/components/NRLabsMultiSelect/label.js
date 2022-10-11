@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import RemoveIcon from './remove.svg';
 
 const Label = ({ value, onRemove }) => {
-  const removeClickHandler = (evt) => {
+  const removeClickHandler = evt => {
     evt.stopPropagation();
     if (onRemove) onRemove(evt);
   };
@@ -24,7 +24,7 @@ const Label = ({ value, onRemove }) => {
 
 Label.propTypes = {
   value: PropTypes.string,
-  onRemove: PropTypes.func,
+  onRemove: PropTypes.func
 };
 
 export default Label;

@@ -3,7 +3,7 @@ const homeQueries = {};
 homeQueries.uniqValuesQuery = (attribute, queryTime, conditions) =>
   `SELECT uniques(${attribute}) AS uniques FROM RokuSystem LIMIT MAX ${queryTime} ${conditions}`;
 
-homeQueries.attributesQuery = (queryTime) =>
+homeQueries.attributesQuery = queryTime =>
   `SELECT keySet() FROM RokuSystem ${queryTime}`;
 
 homeQueries.valuesQuery = (attributes, queryTime, conditions = '') => `

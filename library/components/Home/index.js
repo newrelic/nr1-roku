@@ -20,7 +20,7 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
     { item: 'countryCode', display: 'Country code', isSelected: false },
     { item: 'method', display: 'HTTP Method', isSelected: false },
     { item: 'status', display: 'Error Message', isSelected: false },
-    { item: 'httpCode', display: 'Error Code', isSelected: false },
+    { item: 'httpCode', display: 'Error Code', isSelected: false }
   ]);
   const [filterOptions, setFilterOptions] = useState([]);
   const [filters, setFilters] = useState('');
@@ -41,10 +41,10 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
 
       const {
         data: [{ data: dataAttr } = {}],
-        error: errAttr,
+        error: errAttr
       } = await NrqlQuery.query({
         accountIds,
-        query: homeQueries.attributesQuery(qryTime),
+        query: homeQueries.attributesQuery(qryTime)
       });
 
       if (errAttr || !dataAttr || !dataAttr.length) {
@@ -54,18 +54,18 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
       }
 
       const [resp] = dataAttr;
-      const recAttrs = groups.map((grp) => grp.item);
+      const recAttrs = groups.map(grp => grp.item);
       const [recs, other] = ['boolean', 'numeric', 'string'].reduce(
         (acc, type) => {
           const keys = resp[`${type}Keys`];
-          (keys || []).forEach((key) => {
-            const group = +!recAttrs.find((ga) => ga === key);
+          (keys || []).forEach(key => {
+            const group = +!recAttrs.find(ga => ga === key);
             if (!isExcludedAttrib(key))
               acc[group].push({
                 option: key,
                 type,
                 values: [],
-                group: `${group ? 'other' : 'recommended'} filters`,
+                group: `${group ? 'other' : 'recommended'} filters`
               });
           });
           return acc;
@@ -77,8 +77,10 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
         ${homeQueries.valuesQuery(recAttrs, qryTime)}
       `;
       const variables = { accounts: accountIds };
-      const { data: { actor: recValues } = {}, error: errVal } =
-        await NerdGraphQuery.query({ query, variables });
+      const {
+        data: { actor: recValues } = {},
+        error: errVal
+      } = await NerdGraphQuery.query({ query, variables });
 
       if (errVal || !recValues) {
         setLoading(false);
@@ -91,7 +93,7 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
         if (attrKey in recValues) {
           const { results: [values] = [] } = recValues[attrKey];
           if (values && values.uniques) {
-            const recIdx = recs.findIndex((rec) => rec.option === attr);
+            const recIdx = recs.findIndex(rec => rec.option === attr);
             if (recIdx > -1) acc[recIdx].values = values.uniques;
           }
         }
@@ -119,7 +121,7 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
     setWhereClause(filters ? `WHERE ${filters}` : '');
   }, [filters]);
 
-  const isExcludedAttrib = (attr) =>
+  const isExcludedAttrib = attr =>
     /entity.|nr.|timestamp|actionName/.test(attr);
 
   const getValues = async (option, conditions) => {
@@ -129,8 +131,9 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
     const variables = { accounts: [accountId] };
     const { data, error } = await NerdGraphQuery.query({ query, variables });
     if (error) return [];
-    const { actor: { attr0: { results: [vals] } = { results: [] } } = {} } =
-      data;
+    const {
+      actor: { attr0: { results: [vals] } = { results: [] } } = {}
+    } = data;
     return vals && vals.uniques && vals.uniques.length ? vals.uniques : [];
   };
 
@@ -183,7 +186,7 @@ const Home = ({ accountId, timeRange, summary, charts, tableQueries }) => {
           className="wrapper"
           style={{
             padding: 0,
-            marginBottom: t < tableQueries.length - 1 ? 'auto' : 0,
+            marginBottom: t < tableQueries.length - 1 ? 'auto' : 0
           }}
           key={t}
         >
@@ -205,7 +208,7 @@ Home.propTypes = {
   timeRange: PropTypes.object,
   summary: PropTypes.object,
   charts: PropTypes.array,
-  tableQueries: PropTypes.array,
+  tableQueries: PropTypes.array
 };
 
 export default Home;

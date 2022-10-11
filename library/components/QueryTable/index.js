@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableHeaderCell,
   TableRow,
-  TableRowCell,
+  TableRowCell
 } from 'nr1';
 
 import { formatTimestamp } from '../../utils/datetime';
@@ -20,7 +20,7 @@ const QueryTable = ({
   baseQuery,
   whereClause,
   queryTime,
-  title,
+  title
 }) => {
   const [items, setItems] = useState([]);
   const [attributes, setAttributes] = useState([]);
@@ -33,7 +33,7 @@ const QueryTable = ({
       const query = `${baseQuery} ${whereClause} ${queryTime}`;
       const {
         data: [{ data, metadata } = {}],
-        error,
+        error
       } = await NrqlQuery.query({ accountIds, query });
       // console.log('query table response', data, metadata, error, loading);
       if (error || !data || !metadata) {
@@ -44,7 +44,7 @@ const QueryTable = ({
         return;
       }
       const attribs = Object.keys(metadata.units_formatting).filter(
-        (u) => !(u === 'x' || u === 'y')
+        u => !(u === 'x' || u === 'y')
       );
       setItems(data);
       setAttributes(attribs);
@@ -112,7 +112,7 @@ QueryTable.propTypes = {
   baseQuery: PropTypes.string,
   whereClause: PropTypes.string,
   queryTime: PropTypes.string,
-  title: PropTypes.string,
+  title: PropTypes.string
 };
 
 export default QueryTable;

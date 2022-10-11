@@ -54,8 +54,8 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     setOptionFilterMatch(options.map(() => true));
     setOptionsLoading(options.map(() => false));
     setValues(
-      options.map((o) =>
-        (o.values || []).map((v) => ({
+      options.map(o =>
+        (o.values || []).map(v => ({
           value: v,
           display: String(v),
           id: String(v).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
@@ -63,12 +63,12 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
           attribute: o.option,
           isIncluded: true,
           isSelected: false,
-          shouldMatch: true,
+          shouldMatch: true
         }))
       )
     );
     setShownValues(
-      options.map((o) => (o.values.length > 6 ? 5 : o.values.length))
+      options.map(o => (o.values.length > 6 ? 5 : o.values.length))
     );
   }, [options]);
 
@@ -89,8 +89,8 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
 
   const checkHandler = (optionIdx, valueIdx) => {
     const vals = [...values];
-    vals[optionIdx][valueIdx].isSelected =
-      !vals[optionIdx][valueIdx].isSelected;
+    vals[optionIdx][valueIdx].isSelected = !vals[optionIdx][valueIdx]
+      .isSelected;
     setValues(vals);
     const fltrItems = vals
       .reduce(
@@ -104,7 +104,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
                 optionIndex: i,
                 type: val.type,
                 matchType: val.shouldMatch,
-                valueIndexes: [],
+                valueIndexes: []
               };
             qry[idx][val.attribute].valueIndexes.push(j);
             return qry;
@@ -124,11 +124,11 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     setFilterItems(fltrItems);
   };
 
-  const updateOptionsSearchText = (evt) => {
+  const updateOptionsSearchText = evt => {
     const searchText = evt.target.value;
     setOptionsSearchText(searchText);
     const searchRE = new RegExp(searchText, 'i');
-    setOptionFilterMatch(options.map((o) => searchRE.test(o.option)));
+    setOptionFilterMatch(options.map(o => searchRE.test(o.option)));
     setShowItemsList(true);
   };
 
@@ -167,7 +167,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     } else {
       setValues(
         values.map((val, i) =>
-          i === idx ? val.map((v) => ({ ...v, isIncluded: true })) : val
+          i === idx ? val.map(v => ({ ...v, isIncluded: true })) : val
         )
       );
       setShownValues(
@@ -178,8 +178,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     }
   };
 
-  const includedValuesCount = (arr) =>
-    arr.filter((val) => val.isIncluded).length;
+  const includedValuesCount = arr => arr.filter(val => val.isIncluded).length;
 
   const shownCount = (count, show = MIN_ITEMS_SHOWN) =>
     count > Math.max(show, MIN_ITEMS_SHOWN)
@@ -198,7 +197,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
   const updateShownValues = (evt, idx) => {
     evt.preventDefault();
     const shown = [...shownValues];
-    shown[idx] = values[idx].filter((val) => val.isIncluded).length;
+    shown[idx] = values[idx].filter(val => val.isIncluded).length;
     setShownValues(shown);
   };
 
@@ -214,7 +213,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     setValues(
       options.map((o, i) =>
         i === idx
-          ? (vals || []).map((v) => ({
+          ? (vals || []).map(v => ({
               value: v,
               display: String(v),
               id: String(v).replaceAll('^[^a-zA-Z_$]|[^\\w$]', '_'),
@@ -222,7 +221,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
               attribute: o.option,
               isIncluded: true,
               isSelected: false,
-              shouldMatch: true,
+              shouldMatch: true
             }))
           : values[i]
       )
@@ -253,12 +252,12 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
       }
     }
     const vals = await getValues(attr, cond);
-    const prevValues = values[idx].map((v) => ({
+    const prevValues = values[idx].map(v => ({
       ...v,
-      isIncluded: searchRE.test(v.display) || vals.includes(v.value),
+      isIncluded: searchRE.test(v.display) || vals.includes(v.value)
     }));
     return vals.reduce((acc, val) => {
-      if (!acc.some((v) => v.value === val))
+      if (!acc.some(v => v.value === val))
         acc.push({
           value: val,
           display: String(val),
@@ -267,13 +266,13 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
           attribute: attr,
           isIncluded: true,
           isSelected: false,
-          shouldMatch: true,
+          shouldMatch: true
         });
       return acc;
     }, prevValues);
   };
 
-  const selectedValuesCounter = (idx) => {
+  const selectedValuesCounter = idx => {
     const count = selectedValuesCount(idx);
     if (count)
       return (
@@ -281,12 +280,12 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
       );
   };
 
-  const selectedValuesCount = (idx) =>
+  const selectedValuesCount = idx =>
     values[idx].reduce((acc, val) => (val.isSelected ? (acc += 1) : acc), 0);
 
-  const filterItemStr = (item) => {
+  const filterItemStr = item => {
     const attribValues = item.valueIndexes.map(
-      (valIdx) => values[item.optionIndex][valIdx].value
+      valIdx => values[item.optionIndex][valIdx].value
     );
     const hasMany = attribValues.length > 1;
     const surround = item.type === 'string' ? `'` : '';
@@ -304,13 +303,13 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     return `${item.attribute} ${operator} ${valuesStr}`;
   };
 
-  const removeFilterItem = (idx) => {
+  const removeFilterItem = idx => {
     const fltrItems = [...filterItems];
     const cnjctns = [...conjunctions];
     const optIdx = fltrItems[idx].optionIndex;
     const vals = values.map((opt, i) =>
       i === optIdx
-        ? opt.map((val) => ({ ...val, isSelected: false, shouldMatch: true }))
+        ? opt.map(val => ({ ...val, isSelected: false, shouldMatch: true }))
         : opt
     );
     fltrItems.splice(idx, 1);
@@ -344,7 +343,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
     );
   };
 
-  const groupBar = (group) => {
+  const groupBar = group => {
     lastGroup.current = group;
     return <div className="nrlabs-filter-bar-list-group">{group}</div>;
   };
@@ -370,7 +369,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
               <Conjunction
                 operator={conjunctions[i]}
                 isHint={i === filterItems.length - 1}
-                onChange={(operator) => changeConjunction(i, operator)}
+                onChange={operator => changeConjunction(i, operator)}
               />
             </React.Fragment>
           ))}
@@ -421,13 +420,13 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
                           className={`equal ${
                             optionShouldMatch[i] ? 'selected' : ''
                           }`}
-                          onClick={(evt) => changeMatchType(i, true, evt)}
+                          onClick={evt => changeMatchType(i, true, evt)}
                         />
                         <span
                           className={`not-equal ${
                             !optionShouldMatch[i] ? 'selected' : ''
                           }`}
-                          onClick={(evt) => changeMatchType(i, false, evt)}
+                          onClick={evt => changeMatchType(i, false, evt)}
                         />
                       </span>
                     ) : null}
@@ -440,7 +439,7 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
                           type="text"
                           style={{ backgroundColor: '#FFF' }}
                           value={searchTexts[i]}
-                          onChange={(evt) => updateSearchText(evt, option, i)}
+                          onChange={evt => updateSearchText(evt, option, i)}
                         />
                       </div>
                       <div className="nrlabs-filter-bar-list-option-values">
@@ -460,10 +459,9 @@ const NRLabsFilterBar = ({ options, onChange, getValues }) => {
                             style={{ width: checkboxWidth }}
                           >
                             <a
-                              onClick={(evt) => updateShownValues(evt, i)}
-                            >{`Show ${
-                              includedValuesCount(values[i]) - shownValues[i]
-                            } more...`}</a>
+                              onClick={evt => updateShownValues(evt, i)}
+                            >{`Show ${includedValuesCount(values[i]) -
+                              shownValues[i]} more...`}</a>
                           </div>
                         ) : null}
                       </div>
@@ -485,11 +483,11 @@ NRLabsFilterBar.propTypes = {
       option: PropTypes.string,
       info: PropTypes.string,
       values: PropTypes.array,
-      group: PropTypes.string,
+      group: PropTypes.string
     })
   ),
   onChange: PropTypes.func,
-  getValues: PropTypes.func,
+  getValues: PropTypes.func
 };
 
 export default NRLabsFilterBar;

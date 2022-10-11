@@ -22,8 +22,8 @@ const HTTPErrorsNerdlet = () => {
             queries.errors,
             queries.errorRate,
             queries.affectedUsers,
-            queries.affectedUserRate,
-          ],
+            queries.affectedUserRate
+          ]
         }}
         charts={[
           { title: 'Errors', type: 'area', query: queries.errors },
@@ -31,13 +31,13 @@ const HTTPErrorsNerdlet = () => {
           {
             title: 'Users Affected',
             type: 'area',
-            query: queries.affectedUsers,
+            query: queries.affectedUsers
           },
           {
             title: 'Users Affected Rate %',
             type: 'line',
-            query: queries.affectedUserRate,
-          },
+            query: queries.affectedUserRate
+          }
         ]}
         tableQueries={[queries.errorsList]}
       />

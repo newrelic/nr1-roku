@@ -21,7 +21,7 @@ const Conjunction = ({ operator, isHint, onChange }) => {
     };
   });
 
-  const clickHandler = (evt) => {
+  const clickHandler = evt => {
     evt.preventDefault();
     evt.stopPropagation();
     setShowPicker(!showPicker);
@@ -48,7 +48,7 @@ const Conjunction = ({ operator, isHint, onChange }) => {
             <span
               key={i}
               className={opt === operator ? 'selected' : ''}
-              onClick={(evt) => changeHandler(opt, evt)}
+              onClick={evt => changeHandler(opt, evt)}
             >
               {opt}
             </span>
@@ -62,7 +62,7 @@ const Conjunction = ({ operator, isHint, onChange }) => {
 Conjunction.propTypes = {
   operator: PropTypes.string,
   isHint: PropTypes.bool,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func
 };
 
 export default Conjunction;

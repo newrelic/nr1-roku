@@ -41,7 +41,7 @@ Charts.propTypes = {
   charts: PropTypes.array,
   whereClause: PropTypes.string,
   facets: PropTypes.string,
-  queryTime: PropTypes.string,
+  queryTime: PropTypes.string
 };
 
 export default Charts;
