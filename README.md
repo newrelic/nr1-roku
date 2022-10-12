@@ -2,7 +2,7 @@
 
 # New Relic Roku HTTP Analytics
 
-![CI](https://github.com/newrelic/nr1-roku/workflows/CI/badge.svg) ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-roku?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-roku/badge.svg)](https://snyk.io/test/github/newrelic/nr1-roku)
+![CI](https://github.com/newrelic/nr1-roku/workflows/CI/badge.svg) ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/newrelic/nr1-roku?include_prereleases&sort=semver) [![Snyk](https://snyk.io/test/github/newrelic/nr1-roku/badge.svg)](https://snyk.io/test/github/newrelic/nr1-roku) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 The New Relic [Roku observability agent](https://newrelic.com/instant-observability/roku) monitors the system- and video- level performance of Roku over the top (OTT) streaming applications and devices. Specifically, the agent offers insights into an application’s network connectivity, viewer journey, and overall functionality. 
 
