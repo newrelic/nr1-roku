@@ -1,5 +1,5 @@
 {
-  "tagline": "HTTP Analytics for Roku Applications",
+  "tagline": "HTTP Analytics for Roku Apps",
   "repository": "https://github.com/newrelic/nr1-roku.git",
   "details": "An HTTP and HTTP Errors analytics experience for Roku to identify and fix networking issues",
   "keywords": ["visualizations"],
